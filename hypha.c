@@ -61,7 +61,7 @@ int main(int argc, char const *argv[]) {
   // Hypha
   Ohf = 1e0;
   hf = 0.5; //atof(argv[3]); // ratio of the gap thickness to the drop radius, far awaay from the drop.
-  Ec = 1e0; //atof(argv[4]); // Elasto-capillary number: 1e-4 (very soft) to 1e3 (very stiff)
+  Ec = 1e-1; //atof(argv[4]); // Elasto-capillary number: 1e-4 (very soft) to 1e3 (very stiff)
   
   Bond = 1e1; // Bond number: we keep the driving fixed
 
@@ -81,7 +81,7 @@ int main(int argc, char const *argv[]) {
   rho3 = 1e-1; mu3 = Ohc; G3 = 0.;
 
   f1.sigma = 1.0; // drop-cytoplasm interfacial tension
-  f2.sigma = 1e0; // hypha-cytoplasm interfacial tension
+  f2.sigma = 1e-1; // hypha-cytoplasm interfacial tension
 
   run();
 
