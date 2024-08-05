@@ -1,6 +1,7 @@
 .DS_Store
 */.DS_Store
-
+*.html
+*/*.html
 
 intermediate/
 */intermediate/
@@ -12,6 +13,7 @@ hypha
 */hypha
 
 # makefile related
+*.tst
 *.s 
 *.s.d 
 *.tests 
