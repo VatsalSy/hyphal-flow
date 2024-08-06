@@ -1,0 +1,7 @@
+{
+  "C_Cpp.errorSquiggles": "disabled",
+  "files.associations": {
+    "ios": "c",
+    "reduced-three-phase-noncoalescing.h": "c"
+  }
+}

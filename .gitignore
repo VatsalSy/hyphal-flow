@@ -1,3 +1,30 @@
+.DS_Store
+*/.DS_Store
+*.html
+*/*.html
+
+intermediate/
+*/intermediate/
+restart
+*/restart
+log
+*/log
+hypha 
+*/hypha
+
+# makefile related
+*.tst
+*.s 
+*.s.d 
+*.tests 
+*.deps
+
+getData-elastic
+getFacet-threePhase
+*.mp4
+
+Video*
+
 # Prerequisites
 *.d
 
