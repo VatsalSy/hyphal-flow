@@ -19,6 +19,12 @@ hypha
 *.tests 
 *.deps
 
+getData-elastic
+getFacet-threePhase
+*.mp4
+
+Video*
+
 # Prerequisites
 *.d
 

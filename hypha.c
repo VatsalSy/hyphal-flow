@@ -9,12 +9,13 @@
 
 // 1 is drop, 2 is film and 3 is air
 
-#include "axi.h"
+// #include "axi.h"
 #include "navier-stokes/centered.h"
 #define FILTERED
 #include "src-local/three-phase-nonCoalescing-elastic.h"
 #include "src-local/log-conform-elastic.h"
 #include "tension.h"
+#include "src-local/reduced-three-phase-nonCoalescing.h"
 
 // Error tolerances
 #define fErr (1e-3) // error tolerance in VOF
@@ -50,29 +51,29 @@ int main(int argc, char const *argv[]) {
   system(comm);
 
   MAXlevel = 9; //atoi(argv[1]);
-  tmax = 1e1; //atof(argv[2]);
+  tmax = 1e2; //atof(argv[2]);
 
   // Drop
   Ohd = 1e0; // <0.000816/sqrt(816*0.017*0.00075) = 0.008>
-  RhoR_dc = 1e0;
+  RhoR_dc = 1.2e0;
 
   // Hypha
   Ohf = 1e0;
   hf = 0.90; //atof(argv[3]); // ratio of the gap thickness to the drop radius, far awaay from the drop.
-  Ec = 1e2; //atof(argv[4]); // Elasto-capillary number: 1e-4 (very soft) to 1e3 (very stiff)
+  Ec = 0.0; //atof(argv[4]); // Elasto-capillary number: 1e-4 (very soft) to 1e3 (very stiff)
   RhoR_hc = 1e0; // density ratio of hypha to cytoplasm
 
   // cytoplasm
-  Ohc = 1e0;
+  Ohc = 1e-2;
   
   Bond = 1e0; // Bond number: we keep the driving fixed
 
-  Ldomain = 32.0; // Dimension of the domain: should be large enough to get a steady solution to drop velocity.
+  Ldomain = 16.0; // Dimension of the domain: should be large enough to get a steady solution to drop velocity.
 
   fprintf(ferr, "Level %d tmax %g. Ohd %g, Ohf %3.2e, Ohc %3.2e, Ec %3.2f, hf %3.2f, Bo %3.2f, De infty \n", MAXlevel, tmax, Ohd, Ohf, Ohc, Ec, hf, Bond);
 
   L0=Ldomain;
-  X0=-L0/2.0; Y0=0.0;
+  X0=-4.0; Y0=0.0;
   init_grid (1 << (MINlevel));
   periodic(right);
 
@@ -85,6 +86,9 @@ int main(int argc, char const *argv[]) {
   // cytoplasm
   rho3 = 1e0; mu3 = Ohc; G3 = 0.;
 
+  Bf1.x = Bond;
+  Bf2.x = Bond;
+
   f1.sigma = 1e0; // drop-cytoplasm interfacial tension
   f2.sigma = 1e0; // hypha-cytoplasm interfacial tension
 
@@ -92,17 +96,10 @@ int main(int argc, char const *argv[]) {
 
 }
 
-event acceleration(i++){
-  face vector av = a;
-  foreach_face(x){
-    av.x[] += Bond;
-  }
-}
-
 event init(t = 0){
   if (!restore (file = "restart")) {
-    double width = 1e0; // width of the tanh function
-    double clearance = 0.25; // clearance from the drop inside the cytoplasm at t = 0
+    double width = 2e0; // width of the tanh function
+    double clearance = 0.20; // clearance from the drop inside the cytoplasm at t = 0
     double x0tanh = 0.0; // midpoint of the tanh function
 
     refine (y < 1.2 && level < MAXlevel);
