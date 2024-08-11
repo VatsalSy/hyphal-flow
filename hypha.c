@@ -3,8 +3,11 @@
 # vatsalsanjay@gmail.com
 # Physics of Fluids
 
-# Version 0.1
-# Updated: Aug 5, 2024
+# Version 1.0
+# Updated: Aug 11, 2024
+
+# Change log: 
+* Version 1.0, Aug 11, 2024: allowing the stresses to relax. This allows for the cytoplasm as well as the drop to be viscoelastic.
 */
 
 // 1 is drop, 2 is film and 3 is air
@@ -12,8 +15,8 @@
 // #include "axi.h"
 #include "navier-stokes/centered.h"
 #define FILTERED
-#include "src-local/three-phase-nonCoalescing-elastic.h"
-#include "src-local/log-conform-elastic.h"
+#include "src-local/three-phase-nonCoalescing-viscoelastic.h"
+#include "src-local/log-conform-viscoelastic.h"
 #include "tension.h"
 #include "src-local/reduced-three-phase-nonCoalescing.h"
 
@@ -31,13 +34,14 @@ int MAXlevel;
 double tmax;
 
 // moving Drop is assumed Newtonian for now
-double Ohd, RhoR_dc; 
+double Ohd, RhoR_dc, Ec_d, De_d; 
 
 // hypha is modelled as Kelvin-Voigt solid
-double RhoR_hc, Ohf, hf, Ec; // De is \infty
+double RhoR_hc, Ohf, hf, Ec_h, De_h; 
 
 // cytoplasm is assumed Newtonian as well
-double Ohc;
+double Ohc, Ec_c, De_c;
+
 #define gap(x,y,hf,width,x0,c0) (y - ((c0+1e0) + 0.5 * (hf - (c0+1e0)) * (1 + tanh(sq(x-x0) / width))))
 
 double Bond; // driving force
@@ -56,21 +60,26 @@ int main(int argc, char const *argv[]) {
   // Drop
   Ohd = 1e0; // <0.000816/sqrt(816*0.017*0.00075) = 0.008>
   RhoR_dc = 1.2e0;
+  Ec_d = 0.0; //atof(argv[3]);
+  De_d = 0.0; //atof(argv[4]);
 
   // Hypha
   Ohf = 1e0;
-  hf = 0.90; //atof(argv[3]); // ratio of the gap thickness to the drop radius, far awaay from the drop.
-  Ec = 0.0; //atof(argv[4]); // Elasto-capillary number: 1e-4 (very soft) to 1e3 (very stiff)
+  hf = 0.90; //atof(argv[5]); // ratio of the gap thickness to the drop radius, far awaay from the drop.
+  Ec_h = 1e0; //atof(argv[6]); // Elasto-capillary number: 1e-4 (very soft) to 1e3 (very stiff)
+  De_h = 1e30; //atof(argv[7]);
   RhoR_hc = 1e0; // density ratio of hypha to cytoplasm
 
   // cytoplasm
   Ohc = 1e-2;
+  Ec_c = 0.0; //atof(argv[8]);
+  De_c = 0.0; //atof(argv[9]);
   
   Bond = 1e0; // Bond number: we keep the driving fixed
 
   Ldomain = 16.0; // Dimension of the domain: should be large enough to get a steady solution to drop velocity.
 
-  fprintf(ferr, "Level %d tmax %g. Ohd %g, Ohf %3.2e, Ohc %3.2e, Ec %3.2f, hf %3.2f, Bo %3.2f, De infty \n", MAXlevel, tmax, Ohd, Ohf, Ohc, Ec, hf, Bond);
+  fprintf(ferr, "Level %d tmax %g. Ohd %3.2f, Ec_d %3.2f, De_d %3.2e, Ohc %3.2f, Ec_c %3.2f, De_c %3.2e, Ohf %3.2f, Ec_h %3.2f, De_h %4.3e, hf %3.2f, Bo %3.2f\n", MAXlevel, tmax, Ohd, Ec_d, De_d, Ohc, Ec_c, De_c, Ohf, Ec_h, De_h, hf, Bond);
 
   L0=Ldomain;
   X0=-4.0; Y0=0.0;
@@ -78,13 +87,13 @@ int main(int argc, char const *argv[]) {
   periodic(right);
 
   // drop
-  rho1 = RhoR_dc; mu1 = Ohd; G1 = 0.;
+  rho1 = RhoR_dc; mu1 = Ohd; G1 = Ec_d; lambda1 = De_d;
   
   // Hypha
-  rho2 = RhoR_hc; mu2 = Ohf; G2 = Ec;
+  rho2 = RhoR_hc; mu2 = Ohf; G2 = Ec_h; lambda2 = De_h;
 
   // cytoplasm
-  rho3 = 1e0; mu3 = Ohc; G3 = 0.;
+  rho3 = 1e0; mu3 = Ohc; G3 = Ec_c; lambda3 = De_c;
 
   Bf1.x = Bond;
   Bf2.x = Bond;
@@ -144,7 +153,7 @@ event logWriting (t = 0, t += tsnap2; t <= tmax+tsnap) {
     if (i == 0) {
       fprintf (ferr, "i dt t ke vcm\n");
       fp = fopen ("log", "w");
-      fprintf(fp, "Level %d tmax %g. Ohd %g, Ohf %3.2e, Ohc %3.2e, Ec %3.2f, hf %3.2f, Bo %3.2f, De infty \n", MAXlevel, tmax, Ohd, Ohf, Ohc, Ec, hf, Bond);
+      fprintf(fp, "Level %d tmax %g. Ohd %3.2f, Ec_d %3.2f, De_d %3.2e, Ohc %3.2f, Ec_c %3.2f, De_c %3.2e, Ohf %3.2f, Ec_h %3.2f, De_h %4.3e, hf %3.2f, Bo %3.2f\n", MAXlevel, tmax, Ohd, Ec_d, De_d, Ohc, Ec_c, De_c, Ohf, Ec_h, De_h, hf, Bond);
       fprintf (fp, "i dt t ke vcm\n");
     } else {
       fp = fopen ("log", "a");
