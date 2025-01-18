@@ -141,5 +141,6 @@ If you use this code in your research, please cite:
 ```
 
 ## Acknowledgments
-- Built upon the Basilisk C framework by Stéphane Popinet
-- Special thanks to the Physics of Fluids group for insights on fungal fluid dynamics
+- Built upon the Basilisk C framework by Stéphane Popinet.
+- Special thanks to the Physics of Fluids group for support. 
+- Special thanks to Mazi Jalaal and Eric Lauga for insights on fungal fluid dynamics.
