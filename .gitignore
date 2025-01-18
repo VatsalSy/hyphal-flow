@@ -12,6 +12,7 @@ log
 hypha 
 */hypha
 
+basilisk/_darcs
 # makefile related
 *.tst
 *.s 

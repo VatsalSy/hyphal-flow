@@ -1,0 +1,2 @@
+export BASILISK=/Users/vatsal/Library/CloudStorage/Dropbox/Apps/gitHub/hyphal-flow/basilisk/src
+export PATH=$PATH:$BASILISK
