@@ -1,5 +1,7 @@
 # hyphal-flow
 
+This repository has moved to [comphy-lab/hyphal-flow](https://github.com/comphy-lab/hyphal-flow).
+
 A computational framework for studying a drop flowing through a single fungal hypha branch with viscoelastic effects. Built on Basilisk C, this code simulates three-phase non-coalescing systems, allowing you to track fluid-structure interactions among the drop, hyphal wall (treated as a viscoelastic Kelvin–Voigt solid), and surrounding medium (cytoplasm).
 
 ## Key Features
